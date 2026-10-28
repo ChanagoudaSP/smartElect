@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 p-2" style="background: rgba(255,255,255,0.97);">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4 fw-bold" style="letter-spacing: 1px;">My Profile</h2>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                        <li class="list-group-item"><strong>Voter ID:</strong> {{ user.national_id }}</li>
+                        <li class="list-group-item"><strong>Role:</strong> {% if user.is_admin %}Admin{% else %}Voter{% endif %}</li>
+                        <li class="list-group-item"><strong>Verified:</strong> {% if user.is_verified %}Yes{% else %}No{% endif %}</li>
+                    </ul>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mb-2">Logout</a><br>
+                        <a href="{{ url_for('main.dashboard') if not user.is_admin else url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

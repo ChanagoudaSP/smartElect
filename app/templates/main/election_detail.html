@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ election.title }}{% endblock title %}
+
+{% block content %}
+<div class="subpage-shell">
+    <div class="breadcrumb-nav">
+        <a href="{{ url_for('main.elections') }}">Elections</a>
+        <span>›</span>
+        <span>{{ election.title }}</span>
+    </div>
+
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Election Details</p>
+            <h1>{{ election.title }}</h1>
+        </div>
+    </header>
+
+    <div class="summary-grid" style="margin-bottom: 1.4rem;">
+        <div class="summary-stat">
+            <div class="summary-stat__label">Start</div>
+            <div class="summary-stat__value" style="font-size: 1.2rem;">{{ election.start_date.strftime('%Y-%m-%d') }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">End</div>
+            <div class="summary-stat__value" style="font-size: 1.2rem;">{{ election.end_date.strftime('%Y-%m-%d') }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">Status</div>
+            <div class="summary-stat__value" style="font-size: 1.2rem;">
+                {% if election.is_currently_active %}Open{% elif election.has_ended %}Ended{% elif not election.has_started %}Soon{% else %}Paused{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>About This Election</h2>
+        </div>
+        <div class="subpage-card__body">
+            <p style="margin: 0; color: var(--muted); line-height: 1.8;">{{ election.description }}</p>
+            {% if status_message %}
+                <div class="mt-3">
+                    {% if not election.has_started %}
+                        <span class="status-badge status-badge--warning">Election not started</span>
+                    {% elif election.has_ended %}
+                        <span class="status-badge status-badge--neutral">Election ended</span>
+                    {% elif has_voted %}
+                        <span class="status-badge status-badge--success">You already voted</span>
+                    {% else %}
+                        <span class="status-badge status-badge--success">Voting open</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if candidates %}
+    <div class="subpage-card">
+        <div class="subpage-card__header green">
+            <h2>{% if can_vote %}Cast Your Vote{% else %}Candidates{% endif %}</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="election-grid">
+                {% for candidate in candidates %}
+                <div class="election-card-modern">
+                    <div class="election-card-modern__content" style="text-align: center;">
+                        <img src="{{ url_for('static', filename='uploads/candidates/' ~ (candidate.photo if candidate.photo else 'default_candidate.png')) }}" class="photo-thumb" style="width: 88px; height: 88px; margin-bottom: 0.9rem;" alt="Candidate Photo">
+                        <h3>{{ candidate.name }}</h3>
+                        <p>{{ candidate.party }}</p>
+                        <div class="election-meta" style="display: block; text-align: left; margin-top: 0.8rem;">{{ candidate.bio }}</div>
+                    </div>
+                    {% if can_vote and not has_voted and candidate.verified %}
+                    <div class="election-button">
+                        <form method="POST" action="{{ url_for('main.cast_vote', election_id=election.id, candidate_id=candidate.id) }}" class="vote-form">
+                            <button type="submit" class="primary-action" style="width: 100%;">Vote for {{ candidate.name }}</button>
+                        </form>
+                    </div>
+                    {% elif not candidate.verified %}
+                    <div class="election-button">
+                        <span class="status-badge status-badge--warning">Not verified</span>
+                    </div>
+                    {% elif has_voted and your_vote and candidate.id == your_vote.id %}
+                    <div class="election-button">
+                        <span class="status-badge status-badge--success">Your vote</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="subpage-card">
+        <div class="subpage-card__body">
+            <div class="empty-box">
+                <h3>No candidates yet</h3>
+                <p>No candidates have been registered for this election.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const voteForms = document.querySelectorAll('.vote-form');
+    voteForms.forEach(form => {
+        form.addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = 'Processing...';
+            }
+        });
+    });
+});
+</script>
+{% endblock scripts %}

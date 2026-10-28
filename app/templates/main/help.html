@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center mb-4">
+            <h1 class="fw-bold display-5">Help Center</h1>
+            <p class="lead text-muted">Find answers to common questions about using Smart-Elect</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-vote-yea me-2 text-primary"></i>Voting Guide</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <strong>How to Vote:</strong>
+                            <p class="text-muted small">Open an active election, select your preferred candidate, and confirm your vote before the deadline.</p>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Vote Security:</strong>
+                            <p class="text-muted small">Your vote is encrypted and anonymous. Only verified users can cast a ballot in an active election.</p>
+                        </li>
+                        <li>
+                            <strong>View Results:</strong>
+                            <p class="text-muted small">Once an election ends, you can view the results from your dashboard.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-user-shield me-2 text-success"></i>Account Security</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <strong>Account Security:</strong>
+                            <p class="text-muted small">Your account uses a secure password and verified identity checks to protect your access.</p>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Password Safety:</strong>
+                            <p class="text-muted small">Use a strong password and never share it with anyone.</p>
+                        </li>
+                        <li>
+                            <strong>Account Recovery:</strong>
+                            <p class="text-muted small">Contact the administrators if you need to recover your account.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-question-circle me-2 text-warning"></i>Common Issues</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <strong>Login Issues:</strong>
+                            <p class="text-muted small">Verify that your email and password are correct, and contact the admin if your account is locked.</p>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Cannot Vote:</strong>
+                            <p class="text-muted small">Make sure the election is active and you haven't already voted.</p>
+                        </li>
+                        <li>
+                            <strong>Technical Problems:</strong>
+                            <p class="text-muted small">Clear your browser cache or try a different browser if you experience issues.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Need More Help?</h5>
+                    <p class="mb-0">If you couldn't find the answer to your question, please contact the system administrators for assistance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Ask a Question or Send a Query</h5>
+                    <form method="POST" action="{{ url_for('main.submit_query') }}">
+                        <div class="mb-3">
+                            <label for="queryMessage" class="form-label">Your Question or Query</label>
+                            <textarea class="form-control" id="queryMessage" name="message" rows="4" required placeholder="Type your question or query here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send to Admin</button>
+                    </form>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show mt-3" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Your Previous Queries & Admin Responses</h5>
+                    {% if current_user.queries %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Query</th>
+                                    <th>Submitted At</th>
+                                    <th>Admin Response</th>
+                                    <th>Responded At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for query in current_user.queries|sort(attribute='created_at', reverse=True) %}
+                                <tr>
+                                    <td>{{ query.message }}</td>
+                                    <td>{{ query.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{% if query.response %}{{ query.response }}{% else %}<span class="text-muted">No response yet</span>{% endif %}</td>
+                                    <td>{% if query.responded_at %}{{ query.responded_at.strftime('%Y-%m-%d %H:%M') }}{% else %}-{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>You have not submitted any queries yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

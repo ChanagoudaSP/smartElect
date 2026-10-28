@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Add Candidate{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Candidate Setup</p>
+            <h1>Add Candidate to Election</h1>
+        </div>
+    </header>
+
+    <div class="subpage-card form-card">
+        <div class="subpage-card__header blue">
+            <h2>{{ election.title }}</h2>
+        </div>
+        <div class="subpage-card__body">
+            <form method="POST" enctype="multipart/form-data" class="modern-form">
+                <div class="field-group full">
+                    <label for="name">Candidate Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name" required>
+                </div>
+
+                <div class="field-group full">
+                    <label for="party">Political Party</label>
+                    <input type="text" class="form-control" id="party" name="party" placeholder="Enter party name" required>
+                </div>
+
+                <div class="field-group full">
+                    <label for="bio">Biography</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="5" placeholder="Provide a brief background and campaign summary" required></textarea>
+                </div>
+
+                <div class="field-group full">
+                    <label for="photo">Photo</label>
+                    <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                    <small class="form-text">Upload a clear photo of the candidate (optional)</small>
+                </div>
+
+                <div class="action-button-row">
+                    <button type="submit" class="primary-action">Add Candidate</button>
+                    <a href="{{ url_for('admin.manage_elections') }}" class="secondary-action">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

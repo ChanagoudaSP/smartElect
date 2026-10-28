@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold display-5" style="letter-spacing: 1px;">{{ election.title }} <span class="fw-light">Results</span></h1>
+            <p class="lead text-muted">
+                Total Votes Cast: <b>{{ total_votes }}</b> |
+                Last Updated: <b>{{ now.strftime('%Y-%m-%d %H:%M:%S UTC') }}</b>
+            </p>
+            {% if election.end_date > now %}
+                <p class="text-info">Results are preliminary. Election ends in {{ ((election.end_date - now).total_seconds()/3600)|round|int }} hours.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        {% for result in results %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                {% if result.candidate.photo_url %}
+                <img src="{{ result.candidate.photo_url }}" class="card-img-top" alt="{{ result.candidate.name }}" style="height: 220px; object-fit: cover; border-radius: 1rem 1rem 0 0;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold">{{ result.candidate.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-primary">{{ result.candidate.party }}</h6>
+                    <div class="progress mb-3" style="height: 28px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ '%.1f'|format(result.percentage|default(0)) }}%;" aria-valuenow="{{ result.percentage|default(0) }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="Votes: {{ result.votes }}">
+                            {{ '%.1f'|format(result.percentage|default(0)) }}%
+                        </div>
+                    </div>
+                    <p class="card-text text-muted small">
+                        Votes received: <b>{{ result.votes }}</b>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4 text-center">
+        <a href="{{ url_for('main.election_detail', id=election.id) }}" class="btn btn-secondary btn-lg">Back to Election Details</a>
+    </div>
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+
+
+{% endblock %}

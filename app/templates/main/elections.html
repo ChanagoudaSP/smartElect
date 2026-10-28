@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Elections{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Voting Portal</p>
+            <h1>Elections</h1>
+        </div>
+    </header>
+
+    {% if upcoming_elections and upcoming_elections|length > 0 %}
+    <div class="subpage-card">
+        <div class="subpage-card__header green">
+            <h2>Upcoming Elections</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="card-stack">
+                {% for election in upcoming_elections %}
+                    <div class="election-card-modern">
+                        <div class="election-card-modern__content">
+                            <span class="election-tag" style="background: rgba(59, 130, 246, 0.12); color: #1d4ed8;">Upcoming</span>
+                            <h3>{{ election.title }}</h3>
+                            <p>{{ election.description[:200] }}{% if election.description|length > 200 %}...{% endif %}</p>
+                            <div class="election-meta">
+                                <span>Starts: {{ election.start_date.strftime('%b %d, %Y') }} at {{ election.start_date|format_time }}</span>
+                                <span>Ends: {{ election.end_date.strftime('%b %d, %Y') }} at {{ election.end_date|format_time }}</span>
+                            </div>
+                        </div>
+                        <div class="election-button">
+                            <a href="{{ url_for('main.election_detail', id=election.id) }}" class="secondary-action">Preview</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>Active Elections</h2>
+        </div>
+        <div class="subpage-card__body">
+            {% if elections %}
+                <div class="card-stack">
+                    {% for election in elections %}
+                        {% set user_vote = false %}
+                        {% if election.votes %}
+                            {% for vote in election.votes %}
+                                {% if vote.user_id == current_user.id %}
+                                    {% set user_vote = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="election-card-modern">
+                            <div class="election-card-modern__content">
+                                <span class="election-tag">{{ 'Completed' if user_vote else 'Open' }}</span>
+                                <h3>{{ election.title }}</h3>
+                                <p>{{ election.description[:200] }}{% if election.description|length > 200 %}...{% endif %}</p>
+                                <div class="election-meta">
+                                    <span>Ends: {{ election.end_date.strftime('%b %d, %Y') }} at {{ election.end_date|format_time }}</span>
+                                    {% if user_vote %}
+                                        <span class="status-badge status-badge--success" style="margin-left: 0.75rem;">You voted</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="election-button">
+                                <a href="{{ url_for('main.election_detail', id=election.id) }}" class="primary-action">
+                                    {% if user_vote %}View Details{% else %}Vote Now{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <h3>No active elections</h3>
+                    <p>Check back later for upcoming elections.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header green">
+            <h2>Past Elections</h2>
+        </div>
+        <div class="subpage-card__body">
+            {% if past_elections and past_elections|length > 0 %}
+                <div class="election-grid">
+                    {% for election in past_elections %}
+                        <div class="election-card-modern">
+                            <div class="election-card-modern__content">
+                                <span class="election-tag" style="background: rgba(148, 163, 184, 0.14); color: var(--muted);">Closed</span>
+                                <h3>{{ election.title }}</h3>
+                                <div class="election-meta">Ended: {{ election.end_date.strftime('%b %d, %Y') }}</div>
+                            </div>
+                            <div class="election-button">
+                                <a href="{{ url_for('main.view_results', id=election.id) }}" class="secondary-action">View Results</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <h3>No past elections</h3>
+                    <p>No historical results are available yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

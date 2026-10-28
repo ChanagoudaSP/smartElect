@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">User Access</p>
+            <h1>Manage Users</h1>
+        </div>
+    </header>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>User Directory</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Voter ID</th>
+                            <th>Role</th>
+                            <th>Verified</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.national_id }}</td>
+                            <td>
+                                <span class="status-badge {% if user.is_admin %}status-badge--warning{% else %}status-badge--success{% endif %}">
+                                    {% if user.is_admin %}Admin{% else %}Voter{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {% if user.is_verified %}status-badge--success{% else %}status-badge--warning{% endif %}">
+                                    {% if user.is_verified %}Verified{% else %}Pending{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if user != current_user %}
+                                <div class="table-actions">
+                                    <form method="POST" action="{{ url_for('admin.toggle_admin', id=user.id) }}" class="inline-form">
+                                        <button type="submit" class="table-action {% if user.is_admin %}warning-action{% else %}danger-action{% endif %}">
+                                            {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin.verify_user', id=user.id) }}" class="inline-form">
+                                        <button type="submit" class="table-action success-action">
+                                            {% if user.is_verified %}Re-Verify{% else %}Verify{% endif %}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin.remove_user', id=user.id) }}" class="inline-form" onsubmit="return confirm('Are you sure you want to remove this user?');">
+                                        <button type="submit" class="table-action danger-action">Remove</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

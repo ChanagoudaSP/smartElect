@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Election{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Election Setup</p>
+            <h1>Create New Election</h1>
+        </div>
+    </header>
+
+    <div class="subpage-card form-card">
+        <div class="subpage-card__header blue">
+            <h2>Election Details</h2>
+        </div>
+        <div class="subpage-card__body">
+            <form method="POST" class="modern-form">
+                <div class="field-group full">
+                    <label for="title">Election Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+
+                <div class="field-group full">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>Start Date</label>
+                        <input type="date" class="form-control" id="start_date_date" name="start_date_date" required>
+                    </div>
+                    <div class="field-group">
+                        <label>Start Time</label>
+                        <select class="form-select" id="start_date_time" name="start_date_time" required>
+                            <option value="">Time</option>
+                            <option value="12:00 AM">12:00 AM</option>
+                            <option value="12:30 AM">12:30 AM</option>
+                            <option value="1:00 AM">1:00 AM</option>
+                            <option value="1:30 AM">1:30 AM</option>
+                            <option value="2:00 AM">2:00 AM</option>
+                            <option value="2:30 AM">2:30 AM</option>
+                            <option value="3:00 AM">3:00 AM</option>
+                            <option value="3:30 AM">3:30 AM</option>
+                            <option value="4:00 AM">4:00 AM</option>
+                            <option value="4:30 AM">4:30 AM</option>
+                            <option value="5:00 AM">5:00 AM</option>
+                            <option value="5:30 AM">5:30 AM</option>
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="6:30 AM">6:30 AM</option>
+                            <option value="7:00 AM">7:00 AM</option>
+                            <option value="7:30 AM">7:30 AM</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="8:30 AM">8:30 AM</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="9:30 AM">9:30 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="11:30 AM">11:30 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="12:30 PM">12:30 PM</option>
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="1:30 PM">1:30 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="2:30 PM">2:30 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="3:30 PM">3:30 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="4:30 PM">4:30 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                            <option value="5:30 PM">5:30 PM</option>
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="6:30 PM">6:30 PM</option>
+                            <option value="7:00 PM">7:00 PM</option>
+                            <option value="7:30 PM">7:30 PM</option>
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="8:30 PM">8:30 PM</option>
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="9:30 PM">9:30 PM</option>
+                            <option value="10:00 PM">10:00 PM</option>
+                            <option value="10:30 PM">10:30 PM</option>
+                            <option value="11:00 PM">11:00 PM</option>
+                            <option value="11:30 PM">11:30 PM</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>End Date</label>
+                        <input type="date" class="form-control" id="end_date_date" name="end_date_date" required>
+                    </div>
+                    <div class="field-group">
+                        <label>End Time</label>
+                        <select class="form-select" id="end_date_time" name="end_date_time" required>
+                            <option value="">Time</option>
+                            <option value="12:00 AM">12:00 AM</option>
+                            <option value="12:30 AM">12:30 AM</option>
+                            <option value="1:00 AM">1:00 AM</option>
+                            <option value="1:30 AM">1:30 AM</option>
+                            <option value="2:00 AM">2:00 AM</option>
+                            <option value="2:30 AM">2:30 AM</option>
+                            <option value="3:00 AM">3:00 AM</option>
+                            <option value="3:30 AM">3:30 AM</option>
+                            <option value="4:00 AM">4:00 AM</option>
+                            <option value="4:30 AM">4:30 AM</option>
+                            <option value="5:00 AM">5:00 AM</option>
+                            <option value="5:30 AM">5:30 AM</option>
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="6:30 AM">6:30 AM</option>
+                            <option value="7:00 AM">7:00 AM</option>
+                            <option value="7:30 AM">7:30 AM</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="8:30 AM">8:30 AM</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="9:30 AM">9:30 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="11:30 AM">11:30 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="12:30 PM">12:30 PM</option>
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="1:30 PM">1:30 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="2:30 PM">2:30 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="3:30 PM">3:30 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="4:30 PM">4:30 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                            <option value="5:30 PM">5:30 PM</option>
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="6:30 PM">6:30 PM</option>
+                            <option value="7:00 PM">7:00 PM</option>
+                            <option value="7:30 PM">7:30 PM</option>
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="8:30 PM">8:30 PM</option>
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="9:30 PM">9:30 PM</option>
+                            <option value="10:00 PM">10:00 PM</option>
+                            <option value="10:30 PM">10:30 PM</option>
+                            <option value="11:00 PM">11:00 PM</option>
+                            <option value="11:30 PM">11:30 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="action-button-row">
+                    <button type="submit" class="primary-action">Create Election</button>
+                    <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0];
+    document.getElementById('start_date_date').value = dateString;
+    document.getElementById('end_date_date').value = dateString;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Election Results - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">{{ election.title }} - Results</h2>
+                    <p class="text-muted mb-0">{{ election.start_date.strftime('%Y-%m-%d %H:%M') }} to {{ election.end_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>Vote Distribution</h4>
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Party</th>
+                                    <th>Votes</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if result.candidate.photo %}
+                                                <img src="{{ result.candidate.photo }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% endif %}
+                                            {{ result.candidate.name }}
+                                        </div>
+                                    </td>
+                                    <td>{{ result.candidate.party }}</td>
+                                    <td>{{ result.votes }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: {{ result.percentage }}%"
+                                                     aria-valuenow="{{ result.percentage }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                            {{ "%.1f"|format(result.percentage) }}%
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Votes Cast:</span>
+                                <strong>{{ total_votes }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Voter Turnout:</span>
+                                <strong>{{ "%.1f"|format(turnout_percentage) }}%</strong>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex justify-content-between">
+                                <span>Winner:</span>
+                                <strong class="text-success">{{ winner.name }}</strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Download Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('main.download_results', election_id=election.id, format='pdf') }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                        <a href="{{ url_for('main.download_results', election_id=election.id, format='csv') }}" 
+                           class="btn btn-outline-secondary">
+                            <i class="fas fa-file-csv me-2"></i>Download CSV
+                        </a>
+                        <a href="{{ url_for('main.download_results', election_id=election.id, format='excel') }}" 
+                           class="btn btn-outline-success">
+                            <i class="fas fa-file-excel me-2"></i>Download Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('resultsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ results|map(attribute='candidate.name')|list|tojson }},
+            datasets: [{
+                label: 'Votes',
+                data: {{ results|map(attribute='votes')|list|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

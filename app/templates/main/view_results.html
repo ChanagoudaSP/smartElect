@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Election Results - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <div class="breadcrumb-nav">
+        <a href="{{ url_for('main.elections') }}">Elections</a>
+        <span>›</span>
+        <a href="{{ url_for('main.election_detail', id=election.id) }}">{{ election.title }}</a>
+        <span>›</span>
+        <span>Results</span>
+    </div>
+
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Results</p>
+            <h1>{{ election.title }}</h1>
+        </div>
+    </header>
+
+    <div class="summary-grid" style="margin-bottom: 1.4rem;">
+        <div class="summary-stat">
+            <div class="summary-stat__label">Total Votes</div>
+            <div class="summary-stat__value">{{ total_votes }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">Candidates</div>
+            <div class="summary-stat__value">{{ results|length }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">Ending</div>
+            <div class="summary-stat__value" style="font-size: 1.2rem;">{{ election.end_date.strftime('%Y-%m-%d') }}</div>
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>Vote Distribution</h2>
+        </div>
+        <div class="subpage-card__body">
+            {% if total_votes > 0 %}
+                {% for result in results %}
+                    <div class="result-row">
+                        <span>{{ result.candidate.name }}</span>
+                        <span>{{ result.votes }} votes ({{ result.percentage }}%)</span>
+                    </div>
+                    <div class="result-bar">
+                        <div class="result-bar__track">
+                            <div class="result-bar__fill" style="width: {{ result.percentage }}%;"></div>
+                        </div>
+                        <strong>{{ result.percentage }}%</strong>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-box">
+                    <h3>No votes cast</h3>
+                    <p>This election ended without any votes being recorded.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header green">
+            <h2>Election Information</h2>
+        </div>
+        <div class="subpage-card__body">
+            <ul class="meta-list">
+                <li>
+                    <small>Start Date</small>
+                    <span>{{ election.start_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                </li>
+                <li>
+                    <small>End Date</small>
+                    <span>{{ election.end_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                </li>
+                <li>
+                    <small>Participation</small>
+                    <span>{{ total_votes }} votes cast</span>
+                </li>
+            </ul>
+            {% if current_user.is_admin %}
+            <div class="mt-3">
+                <a href="{{ url_for('admin.download_results', id=election.id) }}" class="primary-action">Download Results</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

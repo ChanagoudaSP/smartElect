@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}User Queries{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Support Desk</p>
+            <h1>User Queries</h1>
+        </div>
+    </header>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>Incoming Requests</h2>
+        </div>
+        <div class="subpage-card__body">
+            {% if queries %}
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Message</th>
+                            <th>Submitted</th>
+                            <th>Response</th>
+                            <th>Responded At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in queries %}
+                        <tr>
+                            <td><strong>{{ query.user.first_name }} {{ query.user.last_name }}</strong><br><small>{{ query.user.email }}</small></td>
+                            <td>{{ query.message }}</td>
+                            <td>{{ query.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{% if query.response %}{{ query.response }}{% else %}<span class="text-muted">No response yet</span>{% endif %}</td>
+                            <td>{% if query.responded_at %}{{ query.responded_at.strftime('%Y-%m-%d %H:%M') }}{% else %}-{% endif %}</td>
+                            <td>
+                                {% if not query.response %}
+                                <form method="POST" action="{{ url_for('admin.respond_query', query_id=query.id) }}" class="inline-form">
+                                    <input type="text" name="response" class="form-control" placeholder="Type response..." required>
+                                    <button type="submit" class="table-action primary-action">Send</button>
+                                </form>
+                                {% else %}
+                                <span class="status-badge status-badge--success">Responded</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-box">
+                <h3>No queries yet</h3>
+                <p>New support requests will appear here.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

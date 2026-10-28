@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <header class="dashboard-header dashboard-header--compact">
+        <div>
+            <p class="eyebrow">Your activity</p>
+            <h1>My Dashboard</h1>
+        </div>
+    </header>
+
+    <section class="dashboard-spotlight dashboard-spotlight--soft">
+        <div>
+            <p class="eyebrow">Welcome back</p>
+            <h2>{{ current_user.first_name }}, here is your voting overview.</h2>
+        </div>
+        <div class="dashboard-spotlight__meta">
+            <span>{{ active_elections_count }} open</span>
+            <span>{{ elections_voted }} voted</span>
+            <span>{{ total_elections }} total</span>
+        </div>
+    </section>
+
+    <section class="stats-grid stats-grid--three">
+        <article class="metric-card metric-card--blue">
+            <div class="metric-card__label">Total Elections</div>
+            <div class="metric-card__value">{{ total_elections }}</div>
+        </article>
+        <article class="metric-card metric-card--green">
+            <div class="metric-card__label">Elections Voted</div>
+            <div class="metric-card__value">{{ elections_voted }}</div>
+        </article>
+        <article class="metric-card metric-card--amber">
+            <div class="metric-card__label">Active Elections</div>
+            <div class="metric-card__value">{{ active_elections_count }}</div>
+        </article>
+    </section>
+
+    <section class="panel list-panel">
+        <div class="panel__header blue">
+            <div class="heading-row">
+                <h2>Active Elections</h2>
+                <a href="{{ url_for('main.elections') }}" class="panel-link">View All Elections</a>
+            </div>
+        </div>
+        <div class="panel__body">
+            {% if active_elections %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Election</th>
+                            <th>Status</th>
+                            <th>End Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for election in active_elections %}
+                        <tr>
+                            <td class="title-cell">{{ election.title }}</td>
+                            <td><span class="status-badge status-badge--success">Active</span></td>
+                            <td>{{ election.end_date.strftime('%Y-%m-%d') }} {{ election.end_date|format_time }}</td>
+                            <td><a href="{{ url_for('main.election_detail', id=election.id) }}" class="mini-action-button">Vote</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">No active elections available at the moment.</div>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if upcoming_elections %}
+    <section class="panel list-panel">
+        <div class="panel__header cyan">
+            <h2>Upcoming Elections</h2>
+        </div>
+        <div class="panel__body">
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Election</th>
+                            <th>Starts</th>
+                            <th>Ends</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for election in upcoming_elections %}
+                        <tr>
+                            <td class="title-cell">{{ election.title }}</td>
+                            <td>{{ election.start_date.strftime('%Y-%m-%d') }} {{ election.start_date|format_time }}</td>
+                            <td>{{ election.end_date.strftime('%Y-%m-%d') }} {{ election.end_date|format_time }}</td>
+                            <td><a href="{{ url_for('main.election_detail', id=election.id) }}" class="mini-action-button secondary">Preview</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="panel list-panel">
+        <div class="panel__header cyan">
+            <h2>Past Elections</h2>
+        </div>
+        <div class="panel__body">
+            {% if past_elections %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Election</th>
+                            <th>Status</th>
+                            <th>End Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for election in past_elections %}
+                        <tr>
+                            <td class="title-cell">{{ election.title }}</td>
+                            <td><span class="status-badge status-badge--neutral">Completed</span></td>
+                            <td>{{ election.end_date.strftime('%Y-%m-%d') }} {{ election.end_date|format_time }}</td>
+                            <td><a href="{{ url_for('main.view_results', id=election.id) }}" class="mini-action-button secondary">View Results</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">No past elections yet.</div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

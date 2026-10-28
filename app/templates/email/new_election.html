@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>New Election Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px;">
+  <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+    <h2 style="color: #185a9d;">Hello {{ user.first_name }},</h2>
+    <p style="font-size: 16px; color: #333;">A new election <b>"{{ election.title }}"</b> has been created on Smart-Elect.</p>
+    <p style="font-size: 15px; color: #555;">Log in to your account to view details and participate.</p>
+    <hr style="margin: 24px 0;">
+    <p style="font-size: 13px; color: #888;">Thank you for being a part of Smart-Elect.<br>Smart-Elect Team</p>
+  </div>
+</body>
+</html>

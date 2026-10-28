@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Candidates{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Candidate Setup</p>
+            <h1>Manage Candidates</h1>
+        </div>
+        <div class="subpage-header__actions">
+            <a href="{{ url_for('admin.new_candidate', election_id=election.id) }}" class="primary-action">Add New Candidate</a>
+        </div>
+    </header>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header orange">
+            <h2>{{ election.title }}</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Party</th>
+                            <th>Bio</th>
+                            <th>Photo</th>
+                            <th>Verified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in candidates %}
+                        <tr>
+                            <td><strong>{{ candidate.name }}</strong></td>
+                            <td>{{ candidate.party }}</td>
+                            <td>{{ candidate.bio }}</td>
+                            <td>
+                                <img src="{{ candidate.photo_url }}" alt="Photo" class="photo-thumb">
+                                <div class="mt-2">
+                                    <button type="button" class="table-action secondary-action" data-bs-toggle="modal" data-bs-target="#updatePhotoModal{{ candidate.id }}">Update Photo</button>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge {% if candidate.verified %}status-badge--success{% else %}status-badge--warning{% endif %}">
+                                    {% if candidate.verified %}Verified{% else %}Pending{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.verify_candidate', id=candidate.id) }}" class="inline-form">
+                                    <button type="submit" class="table-action success-action" {% if candidate.verified %}disabled{% endif %}>
+                                        {% if candidate.verified %}Verified{% else %}Verify{% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% for candidate in candidates %}
+    <div class="modal fade" id="updatePhotoModal{{ candidate.id }}" tabindex="-1" aria-labelledby="updatePhotoModalLabel{{ candidate.id }}" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="POST" action="{{ url_for('admin.update_candidate_photo', candidate_id=candidate.id) }}" enctype="multipart/form-data">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updatePhotoModalLabel{{ candidate.id }}">Update Photo for {{ candidate.name }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="file" name="photo" accept="image/*" class="form-control" required>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

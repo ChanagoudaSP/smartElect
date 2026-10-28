@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Election Results - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Results Dashboard</p>
+            <h1>{{ election.title }}</h1>
+        </div>
+    </header>
+
+    <div class="summary-grid" style="margin-bottom: 1.4rem;">
+        <div class="summary-stat">
+            <div class="summary-stat__label">Total Votes</div>
+            <div class="summary-stat__value">{{ total_votes }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">Candidates</div>
+            <div class="summary-stat__value">{{ results|length }}</div>
+        </div>
+        <div class="summary-stat">
+            <div class="summary-stat__label">Status</div>
+            <div class="summary-stat__value" style="font-size: 1.2rem;">{% if election.is_currently_active %}Live{% else %}Closed{% endif %}</div>
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>Results Summary</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Candidate</th>
+                            <th>Party</th>
+                            <th>Votes</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ result.candidate.name }}</strong></td>
+                            <td>{{ result.candidate.party }}</td>
+                            <td>{{ result.votes }}</td>
+                            <td>{{ result.percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <p class="mb-2"><strong>Total Votes Cast:</strong> {{ total_votes }}</p>
+                <p class="mb-0"><strong>Election Period:</strong> {{ election.start_date.strftime('%Y-%m-%d %H:%M') }} to {{ election.end_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="subpage-card">
+        <div class="subpage-card__header green">
+            <h2>Result Analysis</h2>
+        </div>
+        <div class="subpage-card__body">
+            {% if results %}
+                <div class="election-grid">
+                    {% for result in results %}
+                    <div class="election-card-modern">
+                        <div class="election-card-modern__content">
+                            {% if result.candidate.photo_url %}
+                            <img src="{{ result.candidate.photo_url }}" alt="{{ result.candidate.name }}" class="photo-thumb" style="width: 76px; height: 76px; margin-bottom: 0.9rem;">
+                            {% endif %}
+                            <h3>{{ result.candidate.name }}</h3>
+                            <p>{{ result.candidate.party }}</p>
+                            <div class="result-bar">
+                                <div class="result-bar__track">
+                                    <div class="result-bar__fill" style="width: {{ result.percentage }}%;"></div>
+                                </div>
+                                <strong>{{ result.percentage }}%</strong>
+                            </div>
+                            <div class="election-meta">Votes received: <strong>{{ result.votes }}</strong></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <h3>No results available</h3>
+                    <p>This election has not produced any vote data yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Elections{% endblock %}
+
+{% block content %}
+<div class="subpage-shell">
+    <header class="subpage-header">
+        <div>
+            <p class="subpage-header__eyebrow">Election Control</p>
+            <h1>Manage Elections</h1>
+        </div>
+        <div class="subpage-header__actions">
+            <a href="{{ url_for('admin.new_election') }}" class="primary-action">Create New Election</a>
+        </div>
+    </header>
+
+    {% if elections %}
+    <div class="subpage-card">
+        <div class="subpage-card__header blue">
+            <h2>Election List</h2>
+        </div>
+        <div class="subpage-card__body">
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Status</th>
+                            <th>Results</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for election in elections %}
+                        <tr>
+                            <td><strong>{{ election.title }}</strong></td>
+                            <td>{{ election.description[:100] }}{% if election.description|length > 100 %}...{% endif %}</td>
+                            <td>{{ election.start_date.strftime('%Y-%m-%d') }} {{ election.start_date|format_time}}</td>
+                            <td>{{ election.end_date.strftime('%Y-%m-%d') }} {{ election.end_date|format_time }}</td>
+                            <td>
+                                <span class="status-badge {% if election.is_currently_active %}status-badge--success{% else %}status-badge--neutral{% endif %}">
+                                    {% if election.is_currently_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if election.is_currently_active %}
+                                    <a href="{{ url_for('admin.view_results', id=election.id) }}" class="table-action success-action">View Live Results</a>
+                                {% elif election.end_date < now() %}
+                                    <div class="table-actions">
+                                        <a href="{{ url_for('admin.view_results', id=election.id) }}" class="table-action success-action">View Results</a>
+                                        <div class="dropdown d-inline">
+                                            <button class="table-action ghost-action dropdown-toggle" type="button" data-bs-toggle="dropdown">Download</button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="{{ url_for('admin.download_results', id=election.id, format='csv') }}">CSV</a></li>
+                                                <li><a class="dropdown-item text-muted" href="#" onclick="return false;">PDF (Coming soon)</a></li>
+                                                <li><a class="dropdown-item text-muted" href="#" onclick="return false;">Excel (Coming soon)</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="status-badge status-badge--warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="{{ url_for('admin.edit_election', id=election.id) }}" class="table-action secondary-action">Edit</a>
+                                    <a href="{{ url_for('admin.new_candidate', election_id=election.id) }}" class="table-action success-action">Add Candidate</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="subpage-card">
+        <div class="subpage-card__body">
+            <div class="empty-box">
+                <h3>No elections found</h3>
+                <p>Get started by creating your first election.</p>
+                <a href="{{ url_for('admin.new_election') }}" class="primary-action">Create New Election</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-action">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

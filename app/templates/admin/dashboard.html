@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <header class="dashboard-header">
+        <div>
+            <p class="eyebrow">Operations Overview</p>
+            <h1>Admin Dashboard</h1>
+        </div>
+    </header>
+
+    <section class="dashboard-spotlight">
+        <div>
+            <p class="eyebrow">System health</p>
+            <h2>Election operations at a glance</h2>
+        </div>
+        <div class="dashboard-spotlight__meta">
+            <span>{{ stats.active_elections or 0 }} active</span>
+            <span>{{ stats.total_users or 0 }} voters</span>
+            <span>{{ stats.total_elections or 0 }} elections</span>
+        </div>
+    </section>
+
+    <section class="stats-grid">
+        <article class="metric-card metric-card--blue">
+            <div class="metric-card__label">Total Users</div>
+            <div class="metric-card__value">{{ stats.total_users or 0 }}</div>
+        </article>
+        <article class="metric-card metric-card--green">
+            <div class="metric-card__label">Total Elections</div>
+            <div class="metric-card__value">{{ stats.total_elections or 0 }}</div>
+        </article>
+        <article class="metric-card metric-card--amber">
+            <div class="metric-card__label">Active Elections</div>
+            <div class="metric-card__value">{{ stats.active_elections or 0 }}</div>
+        </article>
+        <article class="metric-card metric-card--pink">
+            <div class="metric-card__label">Total Votes</div>
+            <div class="metric-card__value">{{ stats.total_votes or 0 }}</div>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <h2>Quick Actions</h2>
+        </div>
+        <div class="panel__body">
+            <div class="action-group">
+                <h3>Election Management</h3>
+                <div class="link-row">
+                    <a href="{{ url_for('admin.new_election') }}" class="action-button primary">Create New Election</a>
+                    <a href="{{ url_for('admin.manage_elections') }}" class="action-button secondary">Manage Elections</a>
+                    <a href="{{ url_for('admin.manage_users') }}" class="action-button accent">Manage Users</a>
+                </div>
+            </div>
+
+            <div class="action-group">
+                <h3>Results & Download</h3>
+                <div class="link-row">
+                    {% if recent_elections %}
+                        {% set latest = recent_elections[0] %}
+                        {% if latest.results and latest.results|length > 0 %}
+                            <a href="{{ url_for('admin.view_results', id=latest.id) }}" class="action-button success">View Latest Results</a>
+                            <a href="{{ url_for('admin.download_results', id=latest.id, format='csv') }}" class="action-button info">Download Results</a>
+                        {% else %}
+                            <a href="{{ url_for('admin.edit_election', id=latest.id) }}" class="action-button success">Manage Latest Election</a>
+                        {% endif %}
+                    {% endif %}
+                    <a href="{{ url_for('admin.view_queries') }}" class="action-button warning">User Queries</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="two-column-grid">
+        <article class="panel list-panel">
+            <div class="panel__header blue">
+                <h2>Recent Elections</h2>
+            </div>
+            <div class="panel__body">
+                {% if recent_elections %}
+                    {% for election in recent_elections %}
+                    <div class="entity-row">
+                        <div class="entity-row__meta">
+                            <h3>{{ election.title }}</h3>
+                            <p>{{ election.description[:100] }}{% if election.description|length > 100 %}...{% endif %}</p>
+                        </div>
+                        <div class="entity-row__footer">
+                            <span class="status-badge {% if election.is_active %}status-badge--success{% else %}status-badge--neutral{% endif %}">
+                                {% if election.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <small>{{ election.created_at|format_date }}</small>
+                        </div>
+                        <div class="mini-actions">
+                            <a href="{{ url_for('admin.edit_election', id=election.id) }}" class="mini-link">Edit</a>
+                            <a href="{{ url_for('admin.manage_candidates', election_id=election.id) }}" class="mini-link">Candidates</a>
+                            {% if election.has_ended %}
+                            <a href="{{ url_for('admin.view_results', id=election.id) }}" class="mini-link">Results</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No elections yet</div>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="panel list-panel">
+            <div class="panel__header cyan">
+                <h2>Recent Users</h2>
+            </div>
+            <div class="panel__body">
+                {% if recent_users %}
+                    {% for user in recent_users %}
+                    <div class="entity-row">
+                        <div class="entity-row__meta">
+                            <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                            <p>{{ user.email }}</p>
+                        </div>
+                        <div class="entity-row__footer">
+                            <span class="status-badge {% if user.is_verified %}status-badge--success{% else %}status-badge--warning{% endif %}">
+                                {% if user.is_verified %}Verified{% else %}Pending{% endif %}
+                            </span>
+                            <small>{{ user.created_at|format_date }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No users yet</div>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <div class="dashboard-footer-link">
+        <a href="{{ url_for('admin.dashboard') }}" class="secondary-button">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
